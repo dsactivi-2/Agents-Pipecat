@@ -1,9 +1,17 @@
 FROM python:3.12-slim
 
-# Install system dependencies
+# Install system dependencies for OpenCV and graphics
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
+    libxcb1 \
+    libsm6 \
+    libxext6 \
+    libgomp1 \
+    libglib2.0-0 \
+    libgl1 \
+    libxrender1 \
+    libxkbcommon-x11-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv package manager
