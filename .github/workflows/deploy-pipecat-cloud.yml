@@ -31,4 +31,4 @@ jobs:
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
       
       - name: Notify Deployment
-        run: echo "✓ Deployed to Docker Hub: ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest"
+        run: echo "Deployed to Docker Hub - pipecat-telesales-agent:latest"
