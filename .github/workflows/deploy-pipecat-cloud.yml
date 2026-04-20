@@ -10,25 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Build Docker Image
-        run: |
-          cd server
-          docker build --platform linux/amd64 -t pipecat-telesales-agent:${{ github.sha }} .
-          docker build --platform linux/amd64 -t pipecat-telesales-agent:latest .
-      
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      
-      - name: Push to Docker Hub
-        run: |
-          docker tag pipecat-telesales-agent:latest ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest
-          docker tag pipecat-telesales-agent:${{ github.sha }} ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
+
+      - name: Build and Push to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest,${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
       
       - name: Notify Deployment
         run: echo "Deployed to Docker Hub - pipecat-telesales-agent:latest"
