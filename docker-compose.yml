@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  pipecat-agent:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "7860:7860"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
+      ELEVENLABS_VOICE_ID: ${ELEVENLABS_VOICE_ID:-c9tXABmaj4sESRRQ4Uqo}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-2025-04-14}
+      DAILY_API_KEY: ${DAILY_API_KEY}
+    restart: unless-stopped

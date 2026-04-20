@@ -1,0 +1,34 @@
+name: Deploy to Pipecat Cloud
+
+on:
+  push:
+    branches: [main-deploy]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build Docker Image
+        run: |
+          cd server
+          docker build -t pipecat-telesales-agent:${{ github.sha }} .
+          docker build -t pipecat-telesales-agent:latest .
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      
+      - name: Push to Docker Hub
+        run: |
+          docker tag pipecat-telesales-agent:latest ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest
+          docker tag pipecat-telesales-agent:${{ github.sha }} ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:${{ github.sha }}
+      
+      - name: Notify Deployment
+        run: echo "✓ Deployed to Docker Hub: ${{ secrets.DOCKER_HUB_USERNAME }}/pipecat-telesales-agent:latest"
